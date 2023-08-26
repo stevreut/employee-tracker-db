@@ -1,0 +1,12 @@
+challenge 12 resources and URLs
+
+
+Video submission guide:
+https://coding-boot-camp.github.io/full-stack/computer-literacy/video-submission-guide
+
+Mysql2 package (npm):
+https://www.npmjs.com/package/mysql2
+
+Inquirer package (version 8.2.4) (npm):
+https://www.npmjs.com/package/inquirer/v/8.2.4
+

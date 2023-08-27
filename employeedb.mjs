@@ -30,7 +30,7 @@ console.log('JSON of answers = \n' + answersJsonString);
 
 
 // Connect to database
-let empDb = mysql.createConnection(
+let empDb = await mysql.createConnection(
     {
       host: 'localhost',
       // MySQL username,
@@ -42,7 +42,47 @@ let empDb = mysql.createConnection(
     console.log(`Connected to the classlist_db database.`)
   );
 // TODO - code for connection failure
+
+const OPT_ALL_DEPTS = 'View all departments';
+const OPT_ALL_ROLES = 'View all roles';
+const OPT_ALL_EMPS  = 'View all employees';
+const OPT_ADD_DEPT  = 'Add new department';
+const OPT_ADD_ROLE  = 'Add new role';
+const OPT_ADD_EMPL  = 'Add new employee';
+
+let menuOptions = [
+  {
+    type: 'list',
+    name: 'menuOption',
+    choices: [
+      OPT_ALL_DEPTS,
+      OPT_ALL_ROLES,
+      OPT_ALL_EMPS,
+      OPT_ADD_DEPT,
+      OPT_ADD_ROLE,
+      OPT_ADD_EMPL,
+      'QUIT'
+    ],
+    message: '\n\nChoose one of the following options:'
+  }
+]
   
+let allDone = false;
+while (!allDone) {
+  console.log('\n\n\n');
+  let menuResp = await inquirer.prompt(menuOptions);
+  if (!menuResp || !menuResp.menuOption) {
+    allDone = true;
+    console.log('Error getting menu selection - QUITTING');
+  } else {
+    const { menuOption } = menuResp;
+    console.log('select menu option = "' + menuOption + '"');  // TODO remove after testing
+    if (menuOption === 'QUIT') {
+      allDone = true;
+      console.log('QUITTING program');
+    }
+  }
+}
 
 empDb.query('SELECT * FROM employee', function (err, results) {
   console.log('err = ', err);
@@ -50,33 +90,4 @@ empDb.query('SELECT * FROM employee', function (err, results) {
   console.log('\n\n');
   console.table(results);
   console.log('\n\ndone logging results \n\n');
-});
-
-
-let qst = [
-  {
-    type: 'list',
-    name: 'yesOrNo',
-    choices: ['yes','no'],
-    message: 'Go again?'
-  }
-];
-
-let goAgainResp = await inquirer.prompt(qst);
-const { yesOrNo } = goAgainResp;
-console.log('yesOrNo = "' + yesOrNo + '"');
-if (yesOrNo === 'yes') {
-  console.log('doing another query');
-  empDb.query('SELECT * FROM department', function (err, results) {
-    if (err) {
-      console.log('err = ', err);
-    } else {
-      console.log('results type = ', typeof results);
-      console.table(results);
-    }
-  });
-} else {
-  console.log('no more');
-}
-
-
+});  // TODO - do I have to "then" this?

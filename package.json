@@ -1,0 +1,18 @@
+{
+  "name": "employee-tracker-db",
+  "version": "1.0.0",
+  "description": "Core NodeJS file for employee-tracker-db project/app",
+  "main": "employeedb.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "employee-tracker-db"
+  },
+  "author": "Steve Reuterskiold",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^8.2.4"
+  }
+}

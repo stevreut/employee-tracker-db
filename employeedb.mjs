@@ -68,11 +68,12 @@ console.log('yesOrNo = "' + yesOrNo + '"');
 if (yesOrNo === 'yes') {
   console.log('doing another query');
   empDb.query('SELECT * FROM department', function (err, results) {
-    console.log('err = ', err);
-    console.log('results = ', results);
-    console.log('\n\n');
-    console.table(results);
-    console.log('\n\ndone logging results for department\n\n');
+    if (err) {
+      console.log('err = ', err);
+    } else {
+      console.log('results type = ', typeof results);
+      console.table(results);
+    }
   });
 } else {
   console.log('no more');

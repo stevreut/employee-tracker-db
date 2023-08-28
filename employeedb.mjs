@@ -26,7 +26,30 @@ const OPT_ADD_EMPL  = 'Add new employee';
 const OPT_UPD_ROLE  = 'Update an employee role';
 
 function logQueryResults(results) {
-  console.table(results);  // TODO
+  if (results.length === 0) {
+    console.log('\n\nNo results returned');
+  } else {
+    let hdrArr = Object.keys(results[0]);
+    let colWidths = [];
+    for (const hdr of hdrArr) {
+      colWidths.push(hdr.length);
+    }
+    for (const row of results) {
+      let rowKeys = Object.keys(row);
+      console.log('row key = ' + JSON.stringify(rowKeys));
+      for (let i=0;i<rowKeys.length;i++) {
+        let len = row[rowKeys[i]].toString().length;
+        console.log('len of "' + row[rowKeys[i]] + '" = ' + len);
+        if (len > colWidths[i]) {
+          console.log('width at ' + i + ' : ' + colWidths[i] + ' -> ' + len);
+          colWidths[i] = len;
+
+        }
+      }
+    }
+    console.log('hdrs = ' + JSON.stringify(hdrArr));
+    console.log('lens = ' + JSON.stringify(colWidths));
+  }
 }
 
 function showDepartments() {
@@ -35,6 +58,7 @@ function showDepartments() {
       allDone = true;
       console.log('error querying departments - QUITTING');
     } else {
+      let hdrs = ['Department Name','Dept. ID'];
       logQueryResults(results);
     }
   }

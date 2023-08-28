@@ -23,9 +23,10 @@ const OPT_ALL_EMPS  = 'View all employees';
 const OPT_ADD_DEPT  = 'Add new department';
 const OPT_ADD_ROLE  = 'Add new role';
 const OPT_ADD_EMPL  = 'Add new employee';
+const OPT_UPD_ROLE  = 'Update an employee role';
 
 function showDepartments() {
-  empDb.query('SELECT * FROM department', function (err, results) {
+  empDb.query('SELECT name AS Department_name, id as Dept_ID FROM department', function (err, results) {
     if (err) {
       allDone = true;
       console.log('error querying departments - QUITTING');
@@ -49,7 +50,15 @@ function showRoles() {
 };
 
 function showEmployees() {
-  // TODO
+  empDb.query('SELECT * FROM employee', function (err, results) {
+    if (err) {
+      allDone = true;
+      console.log('error querying employees - QUITTING');
+    } else {
+      console.table(results);
+    }
+  }
+  )
 };
 
 function addDepartment() {
@@ -64,6 +73,10 @@ function addEmployee() {
   // TODO
 }
 
+function updateEmployeeRole() {
+  // TODO
+}
+
 let menuOptions = [
   {
     type: 'list',
@@ -75,6 +88,7 @@ let menuOptions = [
       OPT_ADD_DEPT,
       OPT_ADD_ROLE,
       OPT_ADD_EMPL,
+      OPT_UPD_ROLE,
       'QUIT'
     ],
     message: '\n\nChoose one of the following options:'
@@ -114,6 +128,9 @@ while (!allDone) {
           break;
         case OPT_ADD_EMPL:
           addEmployee();
+          break;
+        case OPT_UPD_ROLE:
+          updateEmployeeRole();
           break;
         default:
           console.log('unexpected menu option - QUITTING');

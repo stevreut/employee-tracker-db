@@ -4,7 +4,8 @@
   "description": "Employee database and interface implemented via node.js and MySql",
   "main": "employeedb.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node employeedb.mjs"
   },
   "author": "Steve Reuterskiold",
   "license": "MIT",

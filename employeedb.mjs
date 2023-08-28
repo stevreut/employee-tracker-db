@@ -3,18 +3,15 @@ import inquirer from 'inquirer';
 import mysql from 'mysql2';
 
 
-// Connect to database
 let empDb = await mysql.createConnection(
-    {
-      host: 'localhost',
-      // MySQL username,
-      user: 'root',
-      // MySQL password
-      password: '',
-      database: 'hr_db'  // TODO - must match schema.sql
-    },
-    console.log(`Connected to the classlist_db database.`)
-  );
+  {
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'hr_db'  // TODO - must match schema.sql
+  },
+  console.log(`Connected to the classlist_db database.`)
+);
 // TODO - code for connection failure
 
 const OPT_ALL_DEPTS = 'View all departments';
@@ -131,8 +128,7 @@ function showEmployees() {
     } else {
       logQueryResults(results);
     }
-  }
-  )
+  })
 };
 
 function addDepartment() {
@@ -184,7 +180,7 @@ while (!allDone) {
       console.log('QUITTING program');
     } else {
       console.log('processing menu option "' + menuOption + '"');
-      switch(menuOption) {
+      switch (menuOption) {
         case OPT_ALL_DEPTS:
           showDepartments();
           break;
@@ -214,10 +210,4 @@ while (!allDone) {
   }
 }
 
-// empDb.query('SELECT * FROM employee', function (err, results) {
-//   console.log('err = ', err);
-//   console.log('results = ', results);
-//   console.log('\n\n');
-//   console.table(results);
-//   console.log('\n\ndone logging results \n\n');
-// });  // TODO - do I have to "then" this?
+process.exit();

@@ -25,6 +25,25 @@ const OPT_ADD_ROLE  = 'Add new role';
 const OPT_ADD_EMPL  = 'Add new employee';
 const OPT_UPD_ROLE  = 'Update an employee role';
 
+function fixLen(str, len) {
+  if (str === null) {
+    str = 'NULL';
+  }
+  let strr = str.toString();
+  while (strr.length < len) {
+    strr += ' ';
+  }
+  return strr;
+}
+
+function dashLine(len) {
+  let line = '';
+  while (line.length < len) {
+    line += '-';
+  }
+  return line;
+}
+
 function logQueryResults(results) {
   if (results.length === 0) {
     console.log('\n\nNo results returned');
@@ -38,17 +57,44 @@ function logQueryResults(results) {
       let rowKeys = Object.keys(row);
       console.log('row key = ' + JSON.stringify(rowKeys));
       for (let i=0;i<rowKeys.length;i++) {
-        let len = row[rowKeys[i]].toString().length;
+        let value = row[rowKeys[i]];
+        let len = 0;
+        if (value === null) {
+          len = 4;
+        } else {
+          len = row[rowKeys[i]].toString().length;
+        }
         console.log('len of "' + row[rowKeys[i]] + '" = ' + len);
         if (len > colWidths[i]) {
           console.log('width at ' + i + ' : ' + colWidths[i] + ' -> ' + len);
           colWidths[i] = len;
-
         }
       }
     }
     console.log('hdrs = ' + JSON.stringify(hdrArr));
     console.log('lens = ' + JSON.stringify(colWidths));
+    console.log('\n\n\n');
+    let hdrLine = '  ';
+    for (let k=0;k<colWidths.length;k++) {
+      hdrLine += fixLen(hdrArr[k], colWidths[k]);
+      hdrLine += '  ';
+    }
+    console.log(hdrLine);
+    let line = '  ';
+    for (let j=0;j<colWidths.length;j++) {
+      line += dashLine(colWidths[j]);
+      line += '  ';
+    }
+    console.log(line);
+    for (const row of results) {
+      let printLine = '  ';
+      let rowKeys = Object.keys(row);
+      for (let i=0;i<rowKeys.length;i++) {
+        printLine += fixLen(row[rowKeys[i]], colWidths[i]);
+        printLine += '  ';
+      }
+      console.log(printLine);
+    }
   }
 }
 

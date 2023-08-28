@@ -109,19 +109,51 @@ function showDepartments() {
 };
 
 function showRoles() {
-  empDb.query('SELECT * FROM role', function (err, results) {
+  empDb.query(
+  `SELECT
+    title AS Job_Title,
+    role.id AS Role_ID,
+    department.name AS Department,
+    FORMAT(salary,2) AS salary
+   FROM role LEFT JOIN department
+   ON role.department_id = department.id`,
+   function(err, results) {
     if (err) {
       allDone = true;
       console.log('error querying roles - QUITTING');
     } else {
       logQueryResults(results);
     }
-  }
-  )
+  })
 };
 
 function showEmployees() {
-  empDb.query('SELECT * FROM employee', function (err, results) {
+  empDb.query(
+`SELECT 
+Employee_ID,
+  Empl_First_Name,
+  Empl_Last_Name,
+  role.title AS Job_Title,
+  department.name AS Department,
+  FORMAT(salary,2) AS Salary,
+  Manager_First_Name,
+  Manager_Last_Name
+FROM
+(SELECT 
+emp.id AS Employee_ID,
+  emp.first_name AS Empl_First_Name,
+  emp.last_name AS Empl_Last_name,
+  emp.role_id AS Role_ID,
+  mgr.first_name AS Manager_First_Name,
+  mgr.last_name AS Manager_Last_Name
+FROM
+employee AS emp
+  LEFT JOIN
+employee AS mgr
+  ON emp.manager_id = mgr.id) AS E2
+LEFT JOIN role ON E2.Role_ID = role.id
+LEFT JOIN department ON role.department_id = department.id`,
+  function (err, results) {
     if (err) {
       allDone = true;
       console.log('error querying employees - QUITTING');

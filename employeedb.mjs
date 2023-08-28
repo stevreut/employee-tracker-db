@@ -25,13 +25,17 @@ const OPT_ADD_ROLE  = 'Add new role';
 const OPT_ADD_EMPL  = 'Add new employee';
 const OPT_UPD_ROLE  = 'Update an employee role';
 
+function logQueryResults(results) {
+  console.table(results);  // TODO
+}
+
 function showDepartments() {
   empDb.query('SELECT name AS Department_name, id as Dept_ID FROM department', function (err, results) {
     if (err) {
       allDone = true;
       console.log('error querying departments - QUITTING');
     } else {
-      console.table(results);
+      logQueryResults(results);
     }
   }
   )
@@ -43,7 +47,7 @@ function showRoles() {
       allDone = true;
       console.log('error querying roles - QUITTING');
     } else {
-      console.table(results);
+      logQueryResults(results);
     }
   }
   )
@@ -55,7 +59,7 @@ function showEmployees() {
       allDone = true;
       console.log('error querying employees - QUITTING');
     } else {
-      console.table(results);
+      logQueryResults(results);
     }
   }
   )

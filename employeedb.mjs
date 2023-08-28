@@ -2,32 +2,6 @@ import inquirer from 'inquirer';
 
 import mysql from 'mysql2';
 
-console.log('preparing to prompt for info mjs');  // TODO - remove
-
-
-// Just proof-of-concept questions - so far - TODO 
-const questions = [
-    {
-        type: 'input',
-        name: 'fieldName1',
-        message: 'The question goes here?'
-    },
-    {
-        type: 'list',
-        name: 'fieldNameForList1',
-        message: 'The question (to be followed by options)?',
-        choices: ['choice1','choice2','choice3']
-        // filter (val) {
-        //     return val.toLowerCase().trim();
-        // }
-    }
-];
-
-let inqResp = await inquirer.prompt(questions);
-console.log('answers received');
-let answersJsonString = JSON.stringify(inqResp, null, '  ');
-console.log('JSON of answers = \n' + answersJsonString);
-
 
 // Connect to database
 let empDb = await mysql.createConnection(
@@ -49,6 +23,46 @@ const OPT_ALL_EMPS  = 'View all employees';
 const OPT_ADD_DEPT  = 'Add new department';
 const OPT_ADD_ROLE  = 'Add new role';
 const OPT_ADD_EMPL  = 'Add new employee';
+
+function showDepartments() {
+  empDb.query('SELECT * FROM department', function (err, results) {
+    if (err) {
+      allDone = true;
+      console.log('error querying departments - QUITTING');
+    } else {
+      console.table(results);
+    }
+  }
+  )
+};
+
+function showRoles() {
+  empDb.query('SELECT * FROM role', function (err, results) {
+    if (err) {
+      allDone = true;
+      console.log('error querying roles - QUITTING');
+    } else {
+      console.table(results);
+    }
+  }
+  )
+};
+
+function showEmployees() {
+  // TODO
+};
+
+function addDepartment() {
+  // TODO
+};
+
+function addRole() {
+  // TODO
+};
+
+function addEmployee() {
+  // TODO
+}
 
 let menuOptions = [
   {
@@ -80,14 +94,39 @@ while (!allDone) {
     if (menuOption === 'QUIT') {
       allDone = true;
       console.log('QUITTING program');
+    } else {
+      console.log('processing menu option "' + menuOption + '"');
+      switch(menuOption) {
+        case OPT_ALL_DEPTS:
+          showDepartments();
+          break;
+        case OPT_ALL_ROLES:
+          showRoles();
+          break;
+        case OPT_ALL_EMPS:
+          showEmployees();
+          break;
+        case OPT_ADD_DEPT:
+          addDepartment();
+          break;
+        case OPT_ADD_ROLE:
+          addRole();
+          break;
+        case OPT_ADD_EMPL:
+          addEmployee();
+          break;
+        default:
+          console.log('unexpected menu option - QUITTING');
+          allDone = true;
+      }
     }
   }
 }
 
-empDb.query('SELECT * FROM employee', function (err, results) {
-  console.log('err = ', err);
-  console.log('results = ', results);
-  console.log('\n\n');
-  console.table(results);
-  console.log('\n\ndone logging results \n\n');
-});  // TODO - do I have to "then" this?
+// empDb.query('SELECT * FROM employee', function (err, results) {
+//   console.log('err = ', err);
+//   console.log('results = ', results);
+//   console.log('\n\n');
+//   console.table(results);
+//   console.log('\n\ndone logging results \n\n');
+// });  // TODO - do I have to "then" this?

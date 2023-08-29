@@ -250,7 +250,7 @@ while (!allDone) {
           showEmployees();
           break;
         case OPT_ADD_DEPT:
-          addDepartment();
+          await addDepartment();
           break;
         case OPT_ADD_ROLE:
           addRole();

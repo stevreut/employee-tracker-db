@@ -196,9 +196,52 @@ async function addDepartment() {
   };
 };
 
-function addRole() {
-  // TODO
-};
+async function addRole() {
+  empDb.query('SELECT name, id FROM department', async function (err, deptListResults) {
+    if (err) {
+      allDone = true;
+      console.log('error querying departments - QUITTING');
+    } else {
+      if (deptListResults.length < 0) {
+        console.log("At least one department must be added before a role can be added");
+      } else {
+        let deptArr = [];
+        for (const deptListItem of deptListResults) {
+          deptArr.push(deptListItem.name);
+        }
+        let roleInqResp = await inquirer.prompt(
+          [
+            {
+              type: 'input',
+              name: 'role',
+              message: 'Name of new role? : '
+            },
+            {
+              type: 'input',
+              name: 'salary',
+              message: 'Salary for role? : '
+            },
+            {
+              type: 'list',
+              name: 'deptName',
+              choices: deptArr,
+              message: 'Department associated with role ? : '
+            }
+          ]
+        );
+        console.log('rol inq ans = ' + JSON.stringify(roleInqResp));
+        const { role, salary, deptName } = roleInqResp;
+        if (!role || !salary || !deptName) {
+          console.log('missing role, salary, or department name - no role added');
+        } else {
+          console.log('got this far in role processing');
+          
+        }
+      }
+    }
+  });
+}
+
 
 function addEmployee() {
   // TODO
@@ -253,7 +296,7 @@ while (!allDone) {
           await addDepartment();
           break;
         case OPT_ADD_ROLE:
-          addRole();
+          await addRole();
           break;
         case OPT_ADD_EMPL:
           addEmployee();

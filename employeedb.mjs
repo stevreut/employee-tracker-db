@@ -157,8 +157,8 @@ LEFT JOIN department ON role.department_id = department.id`,
   })
 };
 
-function addDepartment() {
-  inquirer.prompt(
+async function addDepartment() {
+  let response = await inquirer.prompt(
     [
       {
         type: 'input',
@@ -166,14 +166,11 @@ function addDepartment() {
         message: 'Department to be added : '
       }
     ]
-  ).then((response) => {
-    if (response.answer) {
-      console.log('dept of resp = "' + response.answer);
-      return response.answer;
-    } else {
-      console.log('no dept in answer');
-    }
-  }).then((deptName) => {
+  );
+  const { answer } = response;
+  console.log('test answer = ' + answer);
+  if (answer) {
+    let deptName = answer;
     console.log('returned dept = "' + deptName + '"');
     empDb.query(`SELECT * FROM department WHERE name = ?`, deptName,
       function (err, results) {
@@ -196,7 +193,7 @@ function addDepartment() {
           }
         }
       });
-  });
+  };
 };
 
 function addRole() {

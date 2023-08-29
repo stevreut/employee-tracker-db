@@ -10,7 +10,6 @@ let empDb = await mysql.createConnection(
     password: '',
     database: 'hr_db'  // TODO - must match schema.sql
   },
-  console.log(`Connected to the classlist_db database.`)
 );
 // TODO - code for connection failure
 
@@ -52,7 +51,6 @@ function logQueryResults(results) {
     }
     for (const row of results) {
       let rowKeys = Object.keys(row);
-      console.log('row key = ' + JSON.stringify(rowKeys));
       for (let i=0;i<rowKeys.length;i++) {
         let value = row[rowKeys[i]];
         let len = 0;
@@ -61,15 +59,11 @@ function logQueryResults(results) {
         } else {
           len = row[rowKeys[i]].toString().length;
         }
-        console.log('len of "' + row[rowKeys[i]] + '" = ' + len);
         if (len > colWidths[i]) {
-          console.log('width at ' + i + ' : ' + colWidths[i] + ' -> ' + len);
           colWidths[i] = len;
         }
       }
     }
-    console.log('hdrs = ' + JSON.stringify(hdrArr));
-    console.log('lens = ' + JSON.stringify(colWidths));
     console.log('\n\n\n');
     let hdrLine = '  ';
     for (let k=0;k<colWidths.length;k++) {
@@ -164,7 +158,45 @@ LEFT JOIN department ON role.department_id = department.id`,
 };
 
 function addDepartment() {
-  // TODO
+  inquirer.prompt(
+    [
+      {
+        type: 'input',
+        name: 'answer',
+        message: 'Department to be added : '
+      }
+    ]
+  ).then((response) => {
+    if (response.answer) {
+      console.log('dept of resp = "' + response.answer);
+      return response.answer;
+    } else {
+      console.log('no dept in answer');
+    }
+  }).then((deptName) => {
+    console.log('returned dept = "' + deptName + '"');
+    empDb.query(`SELECT * FROM department WHERE name = ?`, deptName,
+      function (err, results) {
+        if (err) {
+          allDone = true;
+          console.log('error determining uniqueness of department name - QUITTING');
+        } else {
+          if (results.length >= 1) {
+            console.log(deptName + " NOT ADDED - already exists on DB");
+          } else {
+            empDb.query(`INSERT INTO department (name) VALUE (?)`, deptName,
+              function (err, results) {
+                if (err) {
+                  allDone = true;
+                  console.log('error inserting dept - QUITTING');  // TODO
+                } else {
+                  console.log('Department "' + deptName + '" has been added.');
+                }
+              });
+          }
+        }
+      });
+  });
 };
 
 function addRole() {
@@ -206,12 +238,10 @@ while (!allDone) {
     console.log('Error getting menu selection - QUITTING');
   } else {
     const { menuOption } = menuResp;
-    console.log('select menu option = "' + menuOption + '"');  // TODO remove after testing
     if (menuOption === 'QUIT') {
       allDone = true;
       console.log('QUITTING program');
     } else {
-      console.log('processing menu option "' + menuOption + '"');
       switch (menuOption) {
         case OPT_ALL_DEPTS:
           showDepartments();

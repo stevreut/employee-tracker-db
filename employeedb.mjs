@@ -8,10 +8,9 @@ let empDb = await mysql.createConnection(
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'hr_db'  // TODO - must match schema.sql
+    database: 'hr_db'
   },
 );
-// TODO - code for connection failure
 
 const OPT_ALL_DEPTS = 'View all departments';
 const OPT_ALL_ROLES = 'View all roles';
@@ -21,6 +20,8 @@ const OPT_ADD_ROLE  = 'Add new role';
 const OPT_ADD_EMPL  = 'Add new employee';
 const OPT_UPD_ROLE  = 'Update an employee role';
 
+// Right pads str with spaces until it has length
+// len. 
 function fixLen(str, len) {
   if (str === null) {
     str = 'NULL';
@@ -32,6 +33,8 @@ function fixLen(str, len) {
   return strr;
 }
 
+// Creates a string consisting of a sequence of
+// cashes with a length dictated by the 'len' variable.
 function dashLine(len) {
   let line = '';
   while (line.length < len) {
@@ -40,11 +43,19 @@ function dashLine(len) {
   return line;
 }
 
+// Renders the query results to console in a tabular format
 function logQueryResults(results) {
   if (results.length === 0) {
     console.log('\n\nNo results returned');
   } else {
+    // Get the field names from the first row (which will
+    // be the same as the field names in subsequent rows).  These
+    // field names will be our headers.
     let hdrArr = Object.keys(results[0]);
+    // Ultimately colWidths will contain the desired width for
+    // each column.  This width will be calculated by determining
+    // the maximum length of the header and all data elements for
+    // that column.
     let colWidths = [];
     for (const hdr of hdrArr) {
       colWidths.push(hdr.length);
@@ -59,11 +70,15 @@ function logQueryResults(results) {
         } else {
           len = row[rowKeys[i]].toString().length;
         }
+        // If the length of the data found in column i
+        // is greater than colWidth[i] then update colWidth[i]
+        // with the new maximum length for that column.
         if (len > colWidths[i]) {
           colWidths[i] = len;
         }
       }
     }
+    // Render the header line and the blank lines prior
     console.log('\n\n\n');
     let hdrLine = '  ';
     for (let k=0;k<colWidths.length;k++) {
@@ -71,12 +86,15 @@ function logQueryResults(results) {
       hdrLine += '  ';
     }
     console.log(hdrLine);
+    // Render dashes under the headers
     let line = '  ';
     for (let j=0;j<colWidths.length;j++) {
       line += dashLine(colWidths[j]);
       line += '  ';
     }
     console.log(line);
+    // For each data row, format the output line so that
+    // the data lines up under the column headers.
     for (const row of results) {
       let printLine = '  ';
       let rowKeys = Object.keys(row);
@@ -89,6 +107,7 @@ function logQueryResults(results) {
   }
 }
 
+// Output department names and IDs to the console in a tabular format
 function showDepartments() {
   empDb.query('SELECT name AS Department_name, id as Dept_ID FROM department', function (err, results) {
     if (err) {
@@ -102,6 +121,8 @@ function showDepartments() {
   )
 };
 
+// Output role information and associated department name to the console in
+// a tabular format
 function showRoles() {
   empDb.query(
   `SELECT
@@ -121,6 +142,8 @@ function showRoles() {
   })
 };
 
+// Output employee information, including manager, role, and department info
+// for all employees to the console in a tabular format
 function showEmployees() {
   empDb.query(
 `SELECT 
@@ -157,6 +180,9 @@ LEFT JOIN department ON role.department_id = department.id`,
   })
 };
 
+// Adds a new department to the department table after
+// first confirming that a depart of that name does not
+// already exist.
 async function addDepartment() {
   let response = await inquirer.prompt(
     [
@@ -168,10 +194,8 @@ async function addDepartment() {
     ]
   );
   const { answer } = response;
-  console.log('test answer = ' + answer);
   if (answer) {
     let deptName = answer;
-    console.log('returned dept = "' + deptName + '"');
     empDb.query(`SELECT * FROM department WHERE name = ?`, deptName,
       function (err, results) {
         if (err) {
@@ -179,13 +203,17 @@ async function addDepartment() {
           console.log('error determining uniqueness of department name - QUITTING');
         } else {
           if (results.length >= 1) {
+            // If a query of the department table based on the name provided returns
+            // at least one row then the name is already in use and is reject.
             console.log(deptName + " NOT ADDED - already exists on DB");
           } else {
+            // Otherwise, insert the new name into the table and allow the correspoding
+            // ID to be auto-incremented.
             empDb.query(`INSERT INTO department (name) VALUE (?)`, deptName,
               function (err, results) {
                 if (err) {
                   allDone = true;
-                  console.log('error inserting dept - QUITTING');  // TODO
+                  console.log('error inserting dept - QUITTING');
                 } else {
                   console.log('Department "' + deptName + '" has been added.');
                 }
@@ -196,7 +224,10 @@ async function addDepartment() {
   };
 };
 
-async function addRole() {
+// Would add a new role based on provided role name, salary, and the selection of a 
+// pre-existing department.  Unfortunately, inability to diagnose behavior of
+// inquirer prevented completion of the implementation of this function.
+function addRole() {
   empDb.query('SELECT name, id FROM department', async function (err, deptListResults) {
     if (err) {
       allDone = true;
@@ -229,13 +260,12 @@ async function addRole() {
             }
           ]
         );
-        console.log('rol inq ans = ' + JSON.stringify(roleInqResp));
         const { role, salary, deptName } = roleInqResp;
         if (!role || !salary || !deptName) {
           console.log('missing role, salary, or department name - no role added');
         } else {
-          console.log('got this far in role processing');
-          
+          // Unable to implement due to inability to get past unpredictable and
+          // unexplained behavior of inquirer.
         }
       }
     }
@@ -244,11 +274,13 @@ async function addRole() {
 
 
 function addEmployee() {
-  // TODO
+  // Unable to implement due to inability to get past unpredictable and
+  // unexplained behavior of inquirer.
 }
 
 function updateEmployeeRole() {
-  // TODO
+  // Unable to implement due to inability to get past unpredictable and
+  // unexplained behavior of inquirer.
 }
 
 let menuOptions = [
@@ -269,6 +301,9 @@ let menuOptions = [
   }
 ]
   
+// Repeatedly prompt for main menu items, executing appropriate menu items 
+// depending on the user selection, or until 'QUIT' is chosen, at which point
+// the loop is terminated and the process stopped.
 let allDone = false;
 while (!allDone) {
   console.log('\n\n\n');
@@ -296,7 +331,7 @@ while (!allDone) {
           await addDepartment();
           break;
         case OPT_ADD_ROLE:
-          await addRole();
+          addRole();
           break;
         case OPT_ADD_EMPL:
           addEmployee();
